@@ -1,4 +1,5 @@
 *.dot.pdf
+local_examples/
 __pycache__/
 examples/C_structures/replicate.ipynb
 examples/diamond/replicate.ipynb

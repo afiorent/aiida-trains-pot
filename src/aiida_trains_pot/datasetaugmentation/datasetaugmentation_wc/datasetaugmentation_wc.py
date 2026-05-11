@@ -419,13 +419,18 @@ def AlloysGenerator(fixed_species, alloy_species, num_structures, alloy_fraction
         input_structures += input_dataset.get_ase_list()
     rng = np.random.default_rng(int(time.time()))
     input_structures = [input_structures[0]]
-    while len(alloys) < num_structures:
+    max_attempts = num_structures.value * 10
+    attempts = 0
+    while len(alloys) < num_structures.value and attempts < max_attempts:
+        attempts += 1
         sel = input_structures[rng.integers(len(input_structures))]
         alloy = random_substitute_atoms(sel, fixed_species, alloy_species, alloy_fractions)
+        if alloy is None:
+            continue  # skip if substitution failed (e.g. fractions/species mismatch)
         alloys.append(ase_to_dict(alloy))
         alloys[-1]["gen_method"] = "ALLOY"
     pes_dataset = PESData(alloys)
-    return {"substituted_structures": pes_dataset}
+    return {"alloy_structures": pes_dataset}  # key must match the caller's ["alloy_structures"]
 
 
 @calcfunction
